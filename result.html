@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Training-Log | Results</title>
+
+    <link rel="stylesheet" href="css/screen1.css">
+</head>
+
+<body>
+
+    <main class="result-dashboard">
+
+        <!-- ヘッダー -->
+        <header class="result-header">
+            <div>
+                
+                <p>これまでのトレーニング実績</p>
+            </div>
+
+            <button id="backButton" class="back-button">
+                ← Back
+            </button>
+        </header>
+
+
+        <!-- 実績データ -->
+        <section class="summary-cards">
+
+            <div class="summary-card">
+                <p>TRAINING RECORDS</p>
+                <h2 id="totalDays">0</h2>
+                <span>days</span>
+            </div>
+
+            <div class="summary-card">
+                <p>最高SETS</p>
+                <h2 id="maxSets">0</h2>
+                <span>sets / day</span>
+            </div>
+
+            <div class="summary-card">
+                <p>最高REPS</p>
+                <h2 id="maxReps">0</h2>
+                <span>reps / day</span>
+            </div>
+
+        </section>
+
+
+        <!-- 月別トレーニング記録 -->
+        <section class="chart-section">
+
+            <div class="chart-heading">
+                <h2>Monthly Activity</h2>
+                <p>月ごとのトレーニング記録日数</p>
+            </div>
+
+            <div class="chart-container">
+                <canvas id="monthlyChart"></canvas>
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- グラフ表示ライブラリ -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- JavaScript -->
+    <script src="js/result.js"></script>
+
+</body>
+</html>
+

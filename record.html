@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Training-Log | Record</title>
+
+    <link rel="stylesheet" href="css/screen1.css">
+</head>
+
+<body>
+
+    <main class="record-page">
+
+        <header class="record-header">
+            <h1>Record Your Training</h1>
+            <p>今日のトレーニングを記録しましょう。</p>
+        </header>
+
+        <form id="trainingForm">
+
+            <!-- 日付 -->
+            <section class="record-card">
+                <h2>Training Date</h2>
+
+                <input
+                    type="date"
+                    id="trainingDate"
+                    required
+                >
+            </section>
+
+
+            <!-- 筋トレ -->
+            <section class="record-card">
+
+                <h2>Strength Training</h2>
+
+                <p class="section-description">
+                    実施した種目のセット数と回数を入力してください。
+                </p>
+
+                <div class="exercise-list">
+
+                    <div class="exercise-row">
+                        <label for="chestPress">チェストプレス</label>
+                        <input type="number" id="chestPressSets" min="1" step="1" placeholder="セット">
+                        <input type="number" id="chestPressReps" min="1" step="1" placeholder="回数">
+                    </div>
+
+                    <div class="exercise-row">
+                        <label for="benchPress">ベンチプレス</label>
+                        <input type="number" id="benchPressSets" min="1" step="1" placeholder="セット">
+                        <input type="number" id="benchPressReps" min="1" step="1" placeholder="回数">
+                    </div>
+
+                    <div class="exercise-row">
+                        <label for="chinUp">チンニング</label>
+                        <input type="number" id="chinUpSets" min="1" step="1" placeholder="セット">
+                        <input type="number" id="chinUpReps" min="1" step="1" placeholder="回数">
+                    </div>
+
+                    <div class="exercise-row">
+                        <label for="shoulderPress">ショルダープレス</label>
+                        <input type="number" id="shoulderPressSets" min="1" step="1" placeholder="セット">
+                        <input type="number" id="shoulderPressReps" min="1" step="1" placeholder="回数">
+                    </div>
+
+                    <div class="exercise-row">
+                        <label for="squat">スクワット</label>
+                        <input type="number" id="squatSets" min="1" step="1" placeholder="セット">
+                        <input type="number" id="squatReps" min="1" step="1" placeholder="回数">
+                    </div>
+
+                    <div class="exercise-row">
+                        <label for="sitUp">上体起こし</label>
+                        <input type="number" id="sitUpSets" min="1" step="1" placeholder="セット">
+                        <input type="number" id="sitUpReps" min="1" step="1" placeholder="回数">
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- 有酸素運動 -->
+            <section class="record-card">
+
+                <h2>Cardio Training</h2>
+
+                <p class="section-description">
+                    ランニングなどの有酸素運動を自由に記録できます。
+                </p>
+
+                <textarea
+                    id="cardioMemo"
+                    placeholder="例：ランニング30分、約4km"
+                    rows="4"
+                ></textarea>
+
+            </section>
+
+
+            <!-- エラーメッセージ -->
+            <p id="errorMessage" class="error-message"></p>
+
+
+            <!-- 記録完了 -->
+            <button
+                type="submit"
+                id="completeButton"
+                class="complete-button"
+                disabled
+            >
+                記録を完了する
+            </button>
+
+        </form>
+
+        <button
+            type="button"
+            class="back-button"
+            onclick="location.href='screen1.html'"
+        >
+            ← カレンダーに戻る
+        </button>
+
+    </main>
+
+    <script src="js/record.js"></script>
+
+</body>
+</html>

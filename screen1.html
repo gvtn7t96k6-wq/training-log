@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Training-Log | Dashboard</title>
+
+    <link rel="stylesheet" href="css/screen1.css">
+</head>
+
+<body>
+
+    <main class="dashboard">
+
+        <!-- カレンダー -->
+        <section class="calendar-section">
+
+            <div class="calendar-header">
+                <h1 id="calendarMonth">November 2026</h1>
+                <p>YOUR TRAINING CALENDAR</p>
+            </div>
+
+            <div class="calendar-weekdays">
+                <div>SUN</div>
+                <div>MON</div>
+                <div>TUE</div>
+                <div>WED</div>
+                <div>THU</div>
+                <div>FRI</div>
+                <div>SAT</div>
+            </div>
+
+            <div class="calendar-days" id="calendarDays">
+            </div>
+
+        </section>
+
+
+        <!-- アクションボタン -->
+        <section class="action-section">
+
+            <button id="recordButton" class="action-button record-button">
+                <span>＋</span>
+                Record Your Training
+                <span class="arrow">→</span>
+            </button>
+
+            <button id="resultButton" class="action-button result-button">
+                <span>▥</span>
+                Show Results
+                <span class="arrow">→</span>
+            </button>
+
+        </section>
+
+
+        <!-- モチベーションメッセージ -->
+        <section class="motivation-section">
+
+            <h2>NO EXCUSES.</h2>
+
+            <p>
+                毎日やる。<br>
+                続ける。
+            </p>
+
+        </section>
+
+    </main>
+    <!-- トレーニング記録の詳細ポップアップ -->
+<div id="recordModal" class="record-modal">
+
+    <div class="record-modal-content">
+
+        <button id="closeModal" class="close-modal">
+            ×
+        </button>
+
+        <h2 id="modalDate">Training Record</h2>
+
+        <div id="modalContent">
+        </div>
+
+    </div>
+
+</div>
+
+    <script src="js/screen1.js"></script>
+
+</body>
+
+</html>

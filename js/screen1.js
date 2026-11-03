@@ -1,3 +1,5 @@
+import { supabase } from "./supabase.js";
+
 // =================================
 // カレンダーの表示
 // =================================
@@ -17,72 +19,85 @@ const monthNames = [
     "September", "October", "November", "December"
 ];
 
-// 月の表示
 calendarMonth.textContent =
     `${monthNames[currentMonth]} ${currentYear}`;
 
-// 月の最初の曜日
-const firstDay = new Date(
-    currentYear,
-    currentMonth,
-    1
-).getDay();
+// =================================
+// Supabaseから記録を取得
+// =================================
 
-// 月の日数
-const lastDate = new Date(
-    currentYear,
-    currentMonth + 1,
-    0
-).getDate();
+async function loadCalendar() {
 
-// 記録した日付を取得
-const recordedDates =
-    JSON.parse(localStorage.getItem("trainingDates")) || [];
+    const { data, error } = await supabase
+        .from("training_records")
+        .select("workout_date");
 
+    if (error) {
+        console.error("取得エラー:", error);
+        return;
+    }
+
+    // 記録日を重複なしで取得
+    const recordedDates = [
+        ...new Set(data.map(item => item.workout_date))
+    ];
+
+    createCalendar(recordedDates);
+}
+
+// =================================
 // カレンダーを生成
-calendarDays.innerHTML = "";
+// =================================
 
-// 月初の空白
-for (let i = 0; i < firstDay; i++) {
+function createCalendar(recordedDates) {
 
-    const emptyDay = document.createElement("div");
-    emptyDay.classList.add("calendar-day");
+    const firstDay = new Date(
+        currentYear,
+        currentMonth,
+        1
+    ).getDay();
 
-    calendarDays.appendChild(emptyDay);
-}
+    const lastDate = new Date(
+        currentYear,
+        currentMonth + 1,
+        0
+    ).getDate();
 
-// 日付を表示
-for (let date = 1; date <= lastDate; date++) {
+    calendarDays.innerHTML = "";
 
-    const day = document.createElement("div");
-    day.classList.add("calendar-day");
-
-    const number = document.createElement("span");
-    number.textContent = date;
-
-    // 日付データ
-    const dateKey =
-        `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}-${String(date).padStart(2, "0")}`;
-
-    // 今日の日付
-    if (date === currentDate) {
-        day.classList.add("today");
+    for (let i = 0; i < firstDay; i++) {
+        const emptyDay = document.createElement("div");
+        emptyDay.classList.add("calendar-day");
+        calendarDays.appendChild(emptyDay);
     }
 
-    // 記録済みの日付
-    if (recordedDates.includes(dateKey)) {
-        day.classList.add("recorded");
+    for (let date = 1; date <= lastDate; date++) {
+
+        const day = document.createElement("div");
+        day.classList.add("calendar-day");
+
+        const number = document.createElement("span");
+        number.textContent = date;
+
+        const dateKey =
+            `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}-${String(date).padStart(2, "0")}`;
+
+        if (date === currentDate) {
+            day.classList.add("today");
+        }
+
+        if (recordedDates.includes(dateKey)) {
+            day.classList.add("recorded");
+        }
+
+        day.addEventListener("click", function() {
+            showRecord(dateKey);
+        });
+
+        day.appendChild(number);
+        calendarDays.appendChild(day);
     }
-
-    // 日付をクリックしたとき
-    day.addEventListener("click", function() {
-        showRecord(dateKey);
-    });
-
-    day.appendChild(number);
-    calendarDays.appendChild(day);
 }
-
 
 // =================================
 // 記録内容の表示
@@ -93,85 +108,96 @@ const modalDate = document.getElementById("modalDate");
 const modalContent = document.getElementById("modalContent");
 const closeModal = document.getElementById("closeModal");
 
-function showRecord(dateKey) {
+async function showRecord(dateKey) {
 
-    // 保存された記録を取得
-    const records =
-        JSON.parse(localStorage.getItem("trainingRecords")) || [];
+    const { data, error } = await supabase
+        .from("training_records")
+        .select("*")
+        .eq("workout_date", dateKey);
 
-    // クリックした日付の記録を探す
-    const record = records.find(item => item.date === dateKey);
+    if (error) {
+        console.error("取得エラー:", error);
+        return;
+    }
 
-    // 日付を表示
     const [year, month, date] = dateKey.split("-");
 
     modalDate.textContent =
         `${year}年${Number(month)}月${Number(date)}日の記録`;
 
-    // 表示内容を初期化
     modalContent.innerHTML = "";
 
-    // 記録がない場合
-    if (!record) {
-
+    if (data.length === 0) {
         modalContent.textContent =
             "この日のトレーニング記録はありません。";
-
     } else {
 
-        // 筋トレ記録
         const strengthTitle = document.createElement("h3");
         strengthTitle.textContent = "Strength Training";
-
         modalContent.appendChild(strengthTitle);
 
-        if (record.exercises && record.exercises.length > 0) {
+        // 種目ごとにまとめる
+        const exercises = {};
 
-            record.exercises.forEach(exercise => {
+        data.forEach(item => {
+
+            if (item.exercise === "有酸素運動") return;
+
+            if (!exercises[item.exercise]) {
+                exercises[item.exercise] = {
+                    sets: 0,
+                    reps: item.reps
+                };
+            }
+
+            exercises[item.exercise].sets++;
+        });
+
+        if (Object.keys(exercises).length > 0) {
+
+            Object.entries(exercises).forEach(([name, detail]) => {
 
                 const item = document.createElement("div");
                 item.classList.add("modal-exercise");
 
-                const name = document.createElement("span");
-                name.textContent = exercise.name;
+                const nameElement = document.createElement("span");
+                nameElement.textContent = name;
 
-                const detail = document.createElement("span");
-                detail.textContent =
-                    `${exercise.sets}セット × ${exercise.reps}回`;
+                const detailElement = document.createElement("span");
+                detailElement.textContent =
+                    `${detail.sets}セット × ${detail.reps}回`;
 
-                item.appendChild(name);
-                item.appendChild(detail);
+                item.appendChild(nameElement);
+                item.appendChild(detailElement);
 
                 modalContent.appendChild(item);
-
             });
 
         } else {
-
             const noStrength = document.createElement("p");
             noStrength.textContent = "筋トレの記録はありません。";
-
             modalContent.appendChild(noStrength);
         }
 
-        // 有酸素運動
         const cardioTitle = document.createElement("h3");
         cardioTitle.textContent = "Cardio Training";
-
         modalContent.appendChild(cardioTitle);
 
         const cardioText = document.createElement("p");
         cardioText.classList.add("modal-cardio");
+
+        const cardio = data.find(
+            item => item.cardio_memo && item.cardio_memo.trim() !== ""
+        );
+
         cardioText.textContent =
-            record.cardio || "記録はありません。";
+            cardio ? cardio.cardio_memo : "記録はありません。";
 
         modalContent.appendChild(cardioText);
     }
 
-    // ポップアップを表示
     recordModal.classList.add("active");
 }
-
 
 // =================================
 // ポップアップを閉じる
@@ -181,37 +207,29 @@ closeModal.addEventListener("click", function() {
     recordModal.classList.remove("active");
 });
 
-// 背景をクリックして閉じる
 recordModal.addEventListener("click", function(event) {
-
     if (event.target === recordModal) {
         recordModal.classList.remove("active");
     }
-
 });
 
-// Escapeキーで閉じる
 document.addEventListener("keydown", function(event) {
-
     if (event.key === "Escape") {
         recordModal.classList.remove("active");
     }
-
 });
-
 
 // =================================
 // ボタンの画面遷移
 // =================================
 
-const recordButton = document.getElementById("recordButton");
-
-recordButton.addEventListener("click", function() {
+document.getElementById("recordButton").addEventListener("click", function() {
     window.location.href = "record.html";
 });
 
-const resultButton = document.getElementById("resultButton");
-
-resultButton.addEventListener("click", function() {
+document.getElementById("resultButton").addEventListener("click", function() {
     window.location.href = "result.html";
 });
+
+// カレンダー読み込み
+loadCalendar();

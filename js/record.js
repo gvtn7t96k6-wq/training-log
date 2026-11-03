@@ -1,7 +1,23 @@
 // =================================
 // トレーニング記録機能
 // =================================
+// Supabaseとの接続テスト
+console.log("record.js 読み込み成功");
+import { supabase } from "./supabase.js";
+async function testConnection() {
+    const { data, error } = await supabase
+        .from("training_records")
+        .select("*");
 
+    if (error) {
+        console.error("接続エラー:", error);
+        return;
+    }
+
+    console.log("DBから取得したデータ:", data);
+}
+
+testConnection();
 const form = document.getElementById("trainingForm");
 
 const dateInput = document.getElementById("trainingDate");
@@ -115,87 +131,67 @@ form.addEventListener("input", validateForm);
 // 記録完了
 // =================================
 
-form.addEventListener("submit", function(event) {
+form.addEventListener("submit", async function(event) {
+event.preventDefault();
 
-    event.preventDefault();
+if (!validateForm()) {
+    return;
+}
 
-    if (!validateForm()) {
-        return;
+const trainingData = [];
+
+for (const exercise of exercises) {
+
+    const sets = Number(document.getElementById(
+        exercise.id + "Sets"
+    ).value);
+
+    const reps = Number(document.getElementById(
+        exercise.id + "Reps"
+    ).value);
+console.log(exercise.name, "入力回数:", reps);
+    if (!sets && !reps) {
+        continue;
     }
 
-    // 筋トレ記録を取得
-    const trainingData = [];
-
-    for (const exercise of exercises) {
-
-        const sets = document.getElementById(
-            exercise.id + "Sets"
-        ).value;
-
-        const reps = document.getElementById(
-            exercise.id + "Reps"
-        ).value;
-
-        if (sets === "" && reps === "") {
-            continue;
-        }
-
+    for (let i = 1; i <= sets; i++) {
         trainingData.push({
-            name: exercise.name,
-            sets: Number(sets),
-            reps: Number(reps)
+            workout_date: dateInput.value,
+            exercise: exercise.name,
+            set_number: i,
+            reps: reps,
+            weight: 0,
+            cardio_memo: cardioMemo.value.trim()
         });
     }
+}
 
-    // 1日分の記録データ
-    const record = {
-        date: dateInput.value,
-        exercises: trainingData,
-        cardio: cardioMemo.value.trim()
-    };
+// 有酸素運動だけの日にも対応
+if (trainingData.length === 0 && cardioMemo.value.trim() !== "") {
+    trainingData.push({
+        workout_date: dateInput.value,
+        exercise: "有酸素運動",
+        set_number: 0,
+        reps: 0,
+        weight: 0,
+        cardio_memo: cardioMemo.value.trim()
+    });
+}
 
+// Supabaseに保存
+const { error } = await supabase
+    .from("training_records")
+    .insert(trainingData);
 
-    // 保存済みデータを取得
-    const records =
-        JSON.parse(localStorage.getItem("trainingRecords")) || [];
+if (error) {
+    console.error("保存エラー:", error);
+    alert("保存に失敗しました。");
+    return;
+}
 
-    // 同じ日付の記録があれば上書き
-    const existingIndex = records.findIndex(
-        item => item.date === record.date
-    );
+alert("トレーニングを記録しました！");
 
-    if (existingIndex >= 0) {
-        records[existingIndex] = record;
-    } else {
-        records.push(record);
-    }
-
-    // 記録データを保存
-    localStorage.setItem(
-        "trainingRecords",
-        JSON.stringify(records)
-    );
-
-
-    // カレンダー用の日付一覧を更新
-    const recordedDates =
-        JSON.parse(localStorage.getItem("trainingDates")) || [];
-
-    if (!recordedDates.includes(record.date)) {
-        recordedDates.push(record.date);
-    }
-
-    localStorage.setItem(
-        "trainingDates",
-        JSON.stringify(recordedDates)
-    );
-
-
-    alert("トレーニングを記録しました！");
-
-    // カレンダーに戻る
-    window.location.href = "screen1.html";
-
+window.location.href = "screen1.html";
 });
 
 

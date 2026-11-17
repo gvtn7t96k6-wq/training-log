@@ -1,10 +1,6 @@
 import { supabase } from "./supabase.js";
 
-// =================================
 
-// カレンダーの表示
-
-// =================================
 
 const today = new Date();
 
@@ -30,15 +26,7 @@ const monthNames = [
 
 ];
 
-// Supabaseから取得した記録日
-
 let recordedDates = [];
-
-// =================================
-
-// Supabaseから記録を取得
-
-// =================================
 
 async function loadCalendar() {
 
@@ -69,13 +57,6 @@ async function loadCalendar() {
     createCalendar();
 
 }
-
-// =================================
-
-// カレンダーを生成
-
-// =================================
-
 function createCalendar() {
 
     const year = displayDate.getFullYear();
@@ -182,11 +163,7 @@ function createCalendar() {
 
 }
 
-// =================================
-
 // 前月・次月の切り替え
-
-// =================================
 
 prevMonth.addEventListener("click", function() {
 
@@ -203,13 +180,6 @@ nextMonth.addEventListener("click", function() {
     createCalendar();
 
 });
-
-// =================================
-
-// 記録内容の表示
-
-// =================================
-
 const recordModal = document.getElementById("recordModal");
 
 const modalDate = document.getElementById("modalDate");
@@ -346,11 +316,6 @@ async function showRecord(dateKey) {
 
 }
 
-// =================================
-
-// ポップアップを閉じる
-
-// =================================
 
 closeModal.addEventListener("click", function() {
 
@@ -378,11 +343,6 @@ document.addEventListener("keydown", function(event) {
 
 });
 
-// =================================
-
-// ボタンの画面遷移
-
-// =================================
 
 document.getElementById("recordButton").addEventListener("click", function() {
 
@@ -395,13 +355,5 @@ document.getElementById("resultButton").addEventListener("click", function() {
     window.location.href = "result.html";
 
 });
-
-// =================================
-
-// カレンダー読み込み
-// DBの応答を待たずに日付を先に表示する
-
-// =================================
-
 createCalendar();
 loadCalendar();

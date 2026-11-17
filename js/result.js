@@ -1,15 +1,10 @@
-// ===================================
-// 1. 保存されている記録を取得
-// ===================================
+
 
 const trainingRecords = JSON.parse(
     localStorage.getItem("trainingRecords") || "[]"
 );
 
 
-// ===================================
-// 2. 最高セット数・最高回数を計算
-// ===================================
 
 let maxSets = 0;
 let maxReps = 0;
@@ -32,9 +27,6 @@ trainingRecords.forEach(record => {
 });
 
 
-// ===================================
-// 3. HTMLに数値を表示
-// ===================================
 
 document.getElementById("totalDays").textContent =
     trainingRecords.length;
@@ -45,10 +37,6 @@ document.getElementById("maxSets").textContent =
 document.getElementById("maxReps").textContent =
     maxReps;
 
-
-// ===================================
-// 4. 月ごとの記録日数を集計
-// ===================================
 
 const monthlyCounts = {};
 

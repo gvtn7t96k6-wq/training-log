@@ -27,7 +27,6 @@ const completeButton = document.getElementById("completeButton");
 const errorMessage = document.getElementById("errorMessage");
 
 
-// 今日の日付を設定
 const today = new Date();
 
 const todayString =
@@ -36,7 +35,6 @@ const todayString =
 dateInput.value = todayString;
 
 
-// 種目一覧
 const exercises = [
     { name: "チェストプレス", id: "chestPress" },
     { name: "ベンチプレス", id: "benchPress" },
@@ -47,7 +45,6 @@ const exercises = [
 ];
 
 
-// 入力内容の確認
 function validateForm() {
 
     let hasTraining = false;
@@ -63,7 +60,6 @@ function validateForm() {
             exercise.id + "Reps"
         ).value;
 
-        // 両方空欄なら、その種目は未実施
         if (sets === "" && reps === "") {
             continue;
         }
@@ -123,13 +119,9 @@ function validateForm() {
 }
 
 
-// 入力するたびに確認
 form.addEventListener("input", validateForm);
 
 
-// =================================
-// 記録完了
-// =================================
 
 form.addEventListener("submit", async function(event) {
 event.preventDefault();
